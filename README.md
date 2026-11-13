@@ -1,16 +1,78 @@
-# React + Vite
+# BIR KADAM
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+BIR KADAM is a premium life-planning and guidance platform built with React, Vite, Firebase, and Framer Motion. The project helps users organize practical action plans for life situations, explore guides and categories, and track progress through private personal plans.
 
-Currently, two official plugins are available:
+## Features
+- Premium SaaS-style landing page
+- Responsive pages for home, categories, guides, plan creation, profile, and authentication
+- Reusable UI components
+- Firebase Authentication and Firestore-ready architecture
+- Protected personal dashboard and plan pages
+- Search and category filtering
+- Plan creation, editing, deletion, and step completion tracking
+- Local demo fallback when Firebase is not configured yet
+- Planned AI integration placeholder separated from main plan logic
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Technologies
+- React
+- Vite
+- JavaScript
+- React Router DOM
+- Firebase
+- Framer Motion
+- Lucide React
 
-## React Compiler
+## Installation
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Copy the example environment file:
+   ```bash
+   copy .env.example .env
+   ```
+4. Fill in your Firebase values in `.env`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Firebase setup
+1. Create a Firebase project in the Firebase Console.
+2. Enable Firebase Authentication and select Email/Password.
+3. Create a Firestore database.
+4. Add a web app to your Firebase project.
+5. Copy the config values into `.env`.
+6. Publish the Firestore rules from `firestore.rules` in the Firebase Console.
 
-## Expanding the Oxlint configuration
+## Environment variables
+```bash
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Run locally
+```bash
+npm run dev
+```
+
+## Production build
+```bash
+npm run build
+```
+
+## Deploy to Vercel
+1. Connect your GitHub repository to Vercel.
+2. Import the project as a Vite app.
+3. Add the environment variables from `.env`.
+4. Deploy the project.
+
+## Screenshots
+Add screenshots here after the first deployment or mockup review.
+
+## Live demo
+Placeholder: https://your-project.vercel.app
+
+## Manual notes
+This project includes a graceful local fallback mode for development when Firebase credentials are not available yet. When you add real Firebase credentials, the app will use the configured Authentication and Firestore services automatically.
