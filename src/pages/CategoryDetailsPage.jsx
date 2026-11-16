@@ -3,10 +3,14 @@ import { Link, useParams } from 'react-router-dom'
 import GuideCard from '../components/GuideCard'
 import SearchBar from '../components/SearchBar'
 import SectionHeading from '../components/SectionHeading'
-import { categories, guides } from '../data/siteData'
+import { useAppSettings } from '../context/AppSettingsContext'
+import { getLocalizedCategories, getLocalizedGuides } from '../data/siteData'
 
 const CategoryDetailsPage = () => {
+  const { language, t } = useAppSettings()
   const { categoryId } = useParams()
+  const categories = getLocalizedCategories(language)
+  const guides = getLocalizedGuides(language)
   const category = categories.find((item) => item.id === categoryId) || categories[0]
   const [search, setSearch] = useState('')
 
@@ -18,17 +22,17 @@ const CategoryDetailsPage = () => {
         guide.description.toLowerCase().includes(search.toLowerCase())
       return matchesCategory && matchesQuery
     })
-  }, [category.id, search])
+  }, [category.id, guides, search])
 
   return (
     <section className="page-section">
       <div className="detail-header">
         <div>
-          <span className="eyebrow accent">Категория</span>
+          <span className="eyebrow accent">{t('materials.categoryLabel')}</span>
           <h1>{category.title}</h1>
         </div>
         <Link to="/categories" className="secondary-button button-link">
-          Вернуться к категориям
+          {t('materials.backToCategories')}
         </Link>
       </div>
 
@@ -36,42 +40,36 @@ const CategoryDetailsPage = () => {
         <div className="category-icon large" aria-hidden="true">{category.icon}</div>
         <div>
           <h3>{category.description}</h3>
-          <p>
-            Здесь собраны основные темы, понятные материалы и рекомендации, которые можно использовать
-            как основу для личного плана.
-          </p>
+          <p>{t('materials.descriptionSuffix')}</p>
         </div>
+        <img className="category-summary-image" src={category.image} alt="" loading="lazy" decoding="async" />
       </div>
 
       <div className="filters-row compact-search">
-        <SearchBar
-          value={search}
-          onChange={setSearch}
-          placeholder="Поиск по гиду или описанию"
-        />
+        <SearchBar value={search} onChange={setSearch} placeholder={t('profile.searchByGuide')} />
       </div>
 
-      <SectionHeading eyebrow="Материалы" title="Связанные руководства" />
+      <SectionHeading eyebrow={t('materials.category')} title={t('materials.relatedGuides')} />
       <div className="resource-grid">
         {categoryGuides.map((guide) => (
           <GuideCard key={guide.id} guide={guide} />
         ))}
       </div>
 
-      <SectionHeading eyebrow="Планы" title="Связанные действия" />
+      <SectionHeading eyebrow={t('materials.category')} title={t('materials.relatedPlans')} />
       <div className="plan-utility-grid">
         <div className="utility-card">
-          <h3>Пошаговый план</h3>
-          <p>Сформируйте простой маршрут действий и отмечайте прогресс по мере выполнения.</p>
+          <h3>{t('materials.stepByStep')}</h3>
+          <p>{t('materials.actionDescription')}</p>
           <Link to="/create-plan" className="text-link">
-            Создать план →
+            {t('nav.getStarted')} →
           </Link>
         </div>
         <div className="utility-card">
-          <h3>Личный кабинет</h3>
-          <p>Сохраняйте всё в одном месте и возвращайтесь к своим актуальным задачам.</p>
+          <h3>{t('profile.personalAccount')}</h3>
+          <p>{t('materials.accountDescription')}</p>
           <Link to="/my-plans" className="text-link">
-            Просмотреть планы →
+            {t('materials.viewPlans')} →
           </Link>
         </div>
       </div>

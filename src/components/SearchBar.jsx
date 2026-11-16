@@ -1,6 +1,9 @@
 import { Search } from 'lucide-react'
+import { useAppSettings } from '../context/AppSettingsContext'
 
-const SearchBar = ({ value, onChange, placeholder = 'Поиск...' }) => {
+const SearchBar = ({ value, onChange, placeholder }) => {
+  const { t } = useAppSettings()
+
   return (
     <label className="search-bar">
       <Search size={16} />
@@ -8,7 +11,7 @@ const SearchBar = ({ value, onChange, placeholder = 'Поиск...' }) => {
         type="search"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder || t('common.searchPlaceholder')}
       />
     </label>
   )

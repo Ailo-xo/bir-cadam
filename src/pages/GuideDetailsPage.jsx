@@ -1,10 +1,14 @@
 import { Link, useParams } from 'react-router-dom'
 import { Clock3, ExternalLink, ShieldCheck } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
-import { categories, guides } from '../data/siteData'
+import { useAppSettings } from '../context/AppSettingsContext'
+import { getLocalizedCategories, getLocalizedGuides } from '../data/siteData'
 
 const GuideDetailsPage = () => {
+  const { language, t } = useAppSettings()
   const { guideId } = useParams()
+  const guides = getLocalizedGuides(language)
+  const categories = getLocalizedCategories(language)
   const guide = guides.find((item) => item.id === guideId) || guides[0]
   const category = categories.find((item) => item.id === guide.category)
 
@@ -12,18 +16,18 @@ const GuideDetailsPage = () => {
     <section className="page-section">
       <div className="detail-header">
         <div>
-          <span className="eyebrow accent">Гид</span>
+          <span className="eyebrow accent">{t('materials.guide')}</span>
           <h1>{guide.title}</h1>
         </div>
         <Link to="/guides" className="secondary-button button-link">
-          Все материалы
+          {t('materials.allMaterials')}
         </Link>
       </div>
 
       <div className="article-shell">
         <div className="article-panel">
           <div className="article-meta">
-            <span className="resource-tag">{category?.title || 'Категория'}</span>
+            <span className="resource-tag">{category?.title || t('materials.category')}</span>
             <span className="inline-pill">
               <Clock3 size={14} /> {guide.readTime}
             </span>
@@ -32,16 +36,16 @@ const GuideDetailsPage = () => {
           <p className="lead-copy">{guide.description}</p>
 
           <div className="article-section">
-            <h3>Пошаговый план</h3>
+            <h3>{t('materials.stepByStep')}</h3>
             <ol className="step-list">
               {guide.steps.map((step, index) => (
-                <li key={index}>{step}</li>
+                <li key={`${step}-${index}`}>{step}</li>
               ))}
             </ol>
           </div>
 
           <div className="article-section">
-            <h3>Полезные ресурсы</h3>
+            <h3>{t('materials.usefulResources')}</h3>
             <ul className="inline-list">
               {guide.resources.map((resource) => (
                 <li key={resource}>{resource}</li>
@@ -50,7 +54,7 @@ const GuideDetailsPage = () => {
           </div>
 
           <div className="article-section">
-            <h3>Полезные ссылки</h3>
+            <h3>{t('materials.usefulLinks')}</h3>
             <ul className="inline-list">
               {(guide.sourceLinks || []).map((link) => (
                 <li key={link.href}>
@@ -64,26 +68,26 @@ const GuideDetailsPage = () => {
 
           <div className="article-note">
             <ShieldCheck size={18} />
-            <span>Это демонстрационный материал для интерфейса и проверки структуры.</span>
+            <span>{t('materials.demoNote')}</span>
           </div>
         </div>
 
         <aside className="sidebar-panel">
-          <SectionHeading eyebrow="Информация" title="Важные детали" />
+          <SectionHeading eyebrow={t('materials.information')} title={t('materials.keyDetails')} />
           <ul className="side-list">
             <li>
-              <strong>Категория:</strong> {category?.title}
+              <strong>{t('materials.categoryLabel')}:</strong> {category?.title}
             </li>
             <li>
-              <strong>Время чтения:</strong> {guide.readTime}
+              <strong>{t('materials.readingTime')}:</strong> {guide.readTime}
             </li>
             <li>
-              <strong>Проверка:</strong> {guide.lastVerified}
+              <strong>{t('materials.verification')}:</strong> {guide.lastVerified}
             </li>
           </ul>
 
           <Link to="/create-plan" className="primary-button button-link full-width">
-            Создать мой план <ExternalLink size={16} />
+            {t('materials.createMyPlan')} <ExternalLink size={16} />
           </Link>
         </aside>
       </div>

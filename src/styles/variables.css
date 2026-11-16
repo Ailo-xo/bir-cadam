@@ -11,8 +11,8 @@
   --success: #2d8f6a;
   --error: #b94141;
   --shadow: 0 22px 48px rgba(23, 35, 31, 0.08);
-  --radius-xl: 28px;
-  --radius-lg: 22px;
-  --radius-md: 14px;
+  --radius-xl: 12px;
+  --radius-lg: 9px;
+  --radius-md: 6px;
   --max-width: 1200px;
 }

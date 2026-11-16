@@ -6,6 +6,7 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  signInWithGoogle,
   updateUserProfile,
 } from '../services/authService'
 
@@ -43,6 +44,10 @@ export const AuthProvider = ({ children }) => {
     return nextUser
   }
 
+  const loginWithGoogle = async () => {
+    await signInWithGoogle()
+  }
+
   const register = async (name, email, password) => {
     const nextUser = await registerUser({ name, email, password })
     setUser(nextUser)
@@ -61,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const value = useMemo(
-    () => ({ user, loading, login, register, signOut, updateProfileName }),
+    () => ({ user, loading, login, loginWithGoogle, register, signOut, updateProfileName }),
     [user, loading],
   )
 

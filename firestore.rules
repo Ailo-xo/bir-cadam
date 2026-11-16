@@ -19,5 +19,126 @@ service cloud.firestore {
       allow update: if isSignedIn() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
+
+    match /aiConversations/{conversationId} {
+      function isConversationOwner() {
+        return isSignedIn() && resource.data.uid == request.auth.uid;
+      }
+
+      function ownsConversation() {
+        return isSignedIn()
+          && get(/databases/$(database)/documents/aiConversations/$(conversationId)).data.uid == request.auth.uid;
+      }
+
+      function validPlan(plan) {
+        return plan is map
+          && plan.keys().hasOnly([
+            'title',
+            'description',
+            'goal',
+            'category',
+            'steps',
+            'warnings',
+            'expectedOutcome',
+            'resources'
+          ])
+          && plan.title is string
+          && plan.title.size() > 0
+          && plan.title.size() <= 160
+          && plan.description is string
+          && plan.description.size() <= 1400
+          && plan.goal is string
+          && plan.goal.size() <= 500
+          && plan.category is string
+          && plan.steps is list
+          && plan.steps.size() > 0
+          && plan.steps.size() <= 12
+          && plan.warnings is string
+          && plan.warnings.size() <= 1200
+          && plan.expectedOutcome is string
+          && plan.expectedOutcome.size() <= 900
+          && plan.resources is list
+          && plan.resources.size() <= 5;
+      }
+
+      function validMessageCreate() {
+        return request.resource.data.keys().hasOnly([
+            'role',
+            'content',
+            'plan',
+            'savedPlanId',
+            'resources',
+            'sequence',
+            'createdAt'
+          ])
+          && request.resource.data.role in ['user', 'assistant']
+          && request.resource.data.content is string
+          && request.resource.data.content.size() <= 6000
+          && request.resource.data.sequence is int
+          && request.resource.data.sequence > 0
+          && request.resource.data.createdAt is timestamp
+          && (
+            request.resource.data.role == 'user'
+              ? request.resource.data.keys().hasOnly(['role', 'content', 'sequence', 'createdAt'])
+              : request.resource.data.keys().hasAll([
+                  'role',
+                  'content',
+                  'plan',
+                  'savedPlanId',
+                  'resources',
+                  'sequence',
+                  'createdAt'
+                ])
+                && (request.resource.data.plan == null || validPlan(request.resource.data.plan))
+                && (request.resource.data.savedPlanId == null
+                  || (request.resource.data.savedPlanId is string
+                    && request.resource.data.savedPlanId.size() <= 128))
+                && request.resource.data.resources is list
+                && request.resource.data.resources.size() <= 5
+          );
+      }
+
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'title', 'messageSequence', 'createdAt', 'updatedAt'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.messageSequence == 0
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.updatedAt is timestamp;
+      allow read: if isConversationOwner();
+      allow delete: if isConversationOwner();
+      allow update: if isConversationOwner()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'updatedAt', 'messageSequence'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.updatedAt is timestamp
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['messageSequence'])
+          || (
+            request.resource.data.messageSequence is int
+            && (
+              (!('messageSequence' in resource.data) && request.resource.data.messageSequence == 2)
+              || ('messageSequence' in resource.data
+                && request.resource.data.messageSequence == resource.data.messageSequence + 2)
+            )
+          )
+        );
+
+      match /messages/{messageId} {
+        allow read: if ownsConversation();
+        allow create: if ownsConversation() && validMessageCreate();
+        allow update: if ownsConversation()
+          && resource.data.role == 'assistant'
+          && request.resource.data.role == 'assistant'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['plan', 'savedPlanId'])
+          && validPlan(request.resource.data.plan)
+          && request.resource.data.savedPlanId is string
+          && request.resource.data.savedPlanId.size() <= 128;
+        allow delete: if ownsConversation();
+      }
+    }
+
   }
 }

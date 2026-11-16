@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom'
 import CategoryCard from '../components/CategoryCard'
 import SectionHeading from '../components/SectionHeading'
-import { categories } from '../data/siteData'
+import { useAppSettings } from '../context/AppSettingsContext'
+import { getLocalizedCategories } from '../data/siteData'
 
 const CategoriesPage = () => {
+  const { language, t } = useAppSettings()
+  const categories = getLocalizedCategories(language)
+
   return (
     <section className="page-section">
-      <SectionHeading eyebrow="Категории" title="Выберите тему, которая подходит вашему запросу" />
+      <SectionHeading eyebrow={t('nav.categories')} title={t('home.chooseTopic')} />
 
       <div className="category-grid narrow-grid">
         {categories.map((category) => (
@@ -16,11 +20,11 @@ const CategoriesPage = () => {
 
       <div className="cta-banner">
         <div>
-          <span className="eyebrow accent">Помощь в пути</span>
-          <h3>Нужна система, а не случайный список советов?</h3>
+          <span className="eyebrow accent">{t('home.supportTitle')}</span>
+          <h3>{t('home.supportText')}</h3>
         </div>
         <Link to="/create-plan" className="primary-button button-link">
-          Создать план
+          {t('nav.getStarted')}
         </Link>
       </div>
     </section>

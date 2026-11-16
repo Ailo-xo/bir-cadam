@@ -1,13 +1,15 @@
+import { useAppSettings } from '../context/AppSettingsContext'
+import { Link } from 'react-router-dom'
+
 const AssistantPlaceholder = () => {
+  const { t } = useAppSettings()
+
   return (
     <div className="assistant-placeholder">
-      <div className="assistant-badge">Скоро</div>
-      <h3>AI-помощник появится в следующем обновлении.</h3>
-      <p>
-        В этой версии мы уже подготовили отдельную инфраструктуру для интеграции с
-        безопасным backend-сервисом, чтобы в будущем добавить интеллектуального помощника без
-        нарушения структуры приложения.
-      </p>
+      <div className="assistant-badge">{t('assistant.badge')}</div>
+      <h3>{t('assistant.title')}</h3>
+      <p>{t('assistant.description')}</p>
+      <Link to="/ai" className="secondary-button button-link">{t('assistant.open')}</Link>
     </div>
   )
 }

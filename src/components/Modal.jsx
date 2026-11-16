@@ -1,6 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { useAppSettings } from '../context/AppSettingsContext'
 
 const Modal = ({ isOpen, onClose, title, children }) => {
+  const { t } = useAppSettings()
+
   return (
     <AnimatePresence>
       {isOpen ? (
@@ -21,7 +24,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
           >
             <div className="modal-header">
               <h3>{title}</h3>
-              <button type="button" className="close-button" onClick={onClose}>
+              <button type="button" className="close-button" onClick={onClose} aria-label={t('common.close')}>
                 ×
               </button>
             </div>

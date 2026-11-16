@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import FormInput from '../components/FormInput'
+import { useAppSettings } from '../context/AppSettingsContext'
 import { useAuth } from '../context/AuthContext'
+import LanguageSwitcher from '../components/LanguageSwitcher'
+import { getAuthErrorMessage } from '../utils/authErrorMessage'
 
 const RegisterPage = () => {
   const navigate = useNavigate()
   const { register } = useAuth()
+  const { t } = useAppSettings()
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,17 +24,17 @@ const RegisterPage = () => {
     setError('')
 
     if (!form.name.trim()) {
-      setError('Введите имя пользователя.')
+      setError(t('auth.nameRequired'))
       return
     }
 
     if (form.password.length < 6) {
-      setError('Пароль должен содержать не менее 6 символов.')
+      setError(t('auth.passwordMin'))
       return
     }
 
     if (form.password !== form.confirmPassword) {
-      setError('Пароли не совпадают.')
+      setError(t('auth.passwordMismatch'))
       return
     }
 
@@ -40,7 +44,7 @@ const RegisterPage = () => {
       await register(form.name.trim(), form.email, form.password)
       navigate('/my-plans')
     } catch (err) {
-      setError(err.message || 'Не удалось создать аккаунт.')
+      setError(getAuthErrorMessage(err, 'auth.registerFailed', t))
     } finally {
       setLoading(false)
     }
@@ -50,46 +54,53 @@ const RegisterPage = () => {
     <section className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <span className="eyebrow accent">Регистрация</span>
-          <h1>Создайте аккаунт</h1>
+          <span className="eyebrow accent">{t('auth.registerLabel')}</span>
+          <h1>{t('auth.registerTitle')}</h1>
+          <LanguageSwitcher />
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <FormInput label="Имя" name="name" value={form.name} onChange={updateField} placeholder="Ваше имя" />
           <FormInput
-            label="Email"
+            label={t('auth.name')}
+            name="name"
+            value={form.name}
+            onChange={updateField}
+            placeholder={t('auth.yourName')}
+          />
+          <FormInput
+            label={t('auth.email')}
             name="email"
             type="email"
             value={form.email}
             onChange={updateField}
-            placeholder="name@example.com"
+            placeholder={t('common.emailPlaceholder')}
           />
           <FormInput
-            label="Пароль"
+            label={t('auth.password')}
             name="password"
             type="password"
             value={form.password}
             onChange={updateField}
-            placeholder="Минимум 6 символов"
+            placeholder={t('auth.minPassword')}
           />
           <FormInput
-            label="Подтвердите пароль"
+            label={t('auth.confirmPassword')}
             name="confirmPassword"
             type="password"
             value={form.confirmPassword}
             onChange={updateField}
-            placeholder="Повторите пароль"
+            placeholder={t('auth.repeatPassword')}
           />
 
           {error ? <div className="message-box error">{error}</div> : null}
 
           <button type="submit" className="primary-button full-width" disabled={loading}>
-            {loading ? 'Создаём аккаунт...' : 'Зарегистрироваться'}
+            {loading ? t('auth.loadingRegister') : t('auth.registerButton')}
           </button>
         </form>
 
         <p className="auth-switcher">
-          Уже есть аккаунт? <Link to="/login">Войти</Link>
+          {t('auth.hasAccount')} <Link to="/login">{t('auth.loginButton')}</Link>
         </p>
       </div>
     </section>
